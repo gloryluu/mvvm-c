@@ -27,8 +27,8 @@ class TodoListViewModel {
         self.interactor.fetchTodos()
     }
     
-    func showTodoItem(todo: TodoModel) {
-        coordinator.showListItem(item: todo)
+    func showTodoItem(index: Int) {
+        coordinator.showListItem(item: todoList[index])
     }
     
     func numberOfRows() -> Int {
@@ -39,5 +39,9 @@ class TodoListViewModel {
         let todo = todoList[index]
         return TodoViewCellModel(id: todo.id, title: todo.title, completed: todo.completed)
     }
-
+    
+    func screenTitle() -> String {
+        return "Todo List"
+    }
+    
 }

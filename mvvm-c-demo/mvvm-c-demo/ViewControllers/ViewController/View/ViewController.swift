@@ -12,21 +12,28 @@ import Combine
 protocol ViewControllerProtocol {
     func viewInit()
     func constraintsInit()
+    func updateUI()
 }
 
-class BaseViewController: UIViewController, ViewControllerProtocol {
+extension ViewControllerProtocol where Self: UIViewController {
     func viewInit() {
-        view.backgroundColor = UIColor.white
+        
     }
     
     func constraintsInit() {
         
     }
     
+    func updateUI() {
+        
+    }
+}
+
+class BaseViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewInit()
-        constraintsInit()
+        
+        view.backgroundColor = UIColor.white
     }
 }
 
@@ -52,40 +59,42 @@ class ViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        viewInit()
+        constraintsInit()
         
         viewModel.fetchTodo()
     }
-    
-    override func viewInit() {
+}
+
+extension ViewController: ViewControllerProtocol {
+
+    func viewInit() {
+        title = viewModel.screenTitle()
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(TodoViewCell.self, forCellReuseIdentifier: TodoViewCell.cellIdentifier)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        
         view.addSubview(tableView)
     }
-    
-    override func constraintsInit() {
-        self.tableView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor).isActive = true
-        self.tableView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
-        self.tableView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
-        self.tableView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+
+    func constraintsInit() {
+        tableView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor).isActive = true
+        tableView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
+        tableView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor).isActive = true
     }
-    
-    private func updateUI() {
-        self.tableView.reloadData()
+
+    func updateUI() {
+        tableView.reloadData()
     }
-    
 }
 
 extension ViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        
-        // viewmodel.show todo detail
+        viewModel.showTodoItem(index: indexPath.row)
     }
 }
-
 
 extension ViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
